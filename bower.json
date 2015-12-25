@@ -1,0 +1,25 @@
+{
+  "name": "Komoona",
+  "version": "0.0.0",
+  "authors": [
+    "ranwahle <ran.wahle@gmail.com>"
+  ],
+  "description": "Komoona Home exercise bower modules",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angularjs": "~1.4.3",
+    "momentjs": "~2.10.6"
+  },
+  "devDependencies": {}
+}

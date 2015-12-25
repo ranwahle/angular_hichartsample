@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Served ads </title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+
+    <!-- charts -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+
+    <script src="bower_components/angularjs/angular.min.js"></script>
+    <script src="bower_components/momentjs/moment.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/services/adDataService.js"></script>
+    <script src="js/controllers/mainController.js"></script>
+    <script src="js/directives/chartDirective.js"></script>
+    <script src="js/filters/topFilter.js"></script>
+    <script src="js/filters/percentageFiler.js"></script>
+
+</head>
+<body data-ng-controller="mainController as controller">
+
+<form data-ng-submit="controller.getData()" name="query" class="query-form">
+    <fieldset>
+        <input type="date" data-ng-model="controller.fromDate" placeholder="From"/>
+        <input type="date" data-ng-model="controller.tomDate" placeholder="To"/>
+        <input type="text" data-ng-model="controller.placementId" placeholder="Placement ID"/>
+        <input type="text" data-ng-model="controller.chain" placeholder="Strategy used"/>
+
+        <button type="submit" class="btn btn-default" data-ng-disabled="controller.submitting" >Get Data</button>
+        <div data-ng-if="controller.submitting">Please wait...</div>
+    </fieldset>
+</form>
+
+<div data-ng-if="!controller.placements && controller.submitted && !controller.error">No data</div>
+<div data-ng-if="controller.error">Error getting data</div>
+<div class="row" data-ng-if="controller.placements">
+    <div class="col-md-2">Placement ID</div>
+    <div class="col-md-2">Served</div>
+    <div class="col-md-1">Initied</div>
+    <div class="col-md-2">Default</div>
+</div>
+<div class="row" data-ng-repeat="placementData in controller.placements | orderBy:'inited' | top:10">
+    <div class="col-md-2" data-ng-bind="::placementData.tagid"></div>
+    <div class="col-md-2" data-ng-bind="::placementData.served + ' (' + (placementData.served | percentage:placementData.inited) + ') '"></div>
+    <div class="col-md-1" data-ng-bind="::placementData.inited">Initied</div>
+    <div class="col-md-2" data-ng-bind="placementData.def + ' (' + (placementData.def | percentage:placementData.inited) + ') '"></div>
+</div>
+<div data-ng-if="controller.records && controller.records.length">
+
+     <button class="btn btn-default" data-ng-click="controller.reportType = 'hourly'">Hourly</button>
+    <button class="btn btn-default" data-ng-click="controller.reportType = 'daily'"
+            data-ng-init="controller.reportType='daily'" >Daily</button>
+    <!--<input type="radio" value="daily" data-ng-model="controller.reportType"-->
+           <!--data-ng-init="controller.reportType='daily'" id="rdDaily"/>-->
+    <!--<label for="rdDaily">Daily </label>-->
+</div>
+<chart-directive data-ng-if="controller.records && controller.records.length"
+                 chart-title="'Served Ad data (' + controller.reportType + ')'"
+                 series-keys="['served', 'inited','def']"
+                 series-names="['Served', 'Recieved','Default served']"
+                 chart-data="controller.records" ,
+                 chart-type="controller.reportType"
+                 data-changed="controller.dataChanged"></chart-directive>
+</body>
+</html>
